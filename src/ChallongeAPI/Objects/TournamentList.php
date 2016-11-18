@@ -3,7 +3,7 @@
 namespace ChallongeAPI\Objects;
 
 /**
- * Class TournamentList
+ *   Class TournamentList
  *
  * @property Tournament[] $tournaments
  * @property int          $count
@@ -13,7 +13,7 @@ namespace ChallongeAPI\Objects;
 class TournamentList implements IApiObjectList
 {
 	/**
-	 * TournamentList constructor.
+	 *   TournamentList constructor.
 	 *
 	 * @param array $data
 	 */
@@ -38,6 +38,8 @@ class TournamentList implements IApiObjectList
 	public $tournaments;
 
 	/**
+	 *   Gets all the tournaments.
+	 *
 	 * @return Tournament[]
 	 */
 	public function getTournaments(): array
@@ -46,6 +48,8 @@ class TournamentList implements IApiObjectList
 	}
 
 	/**
+	 *   Gets tournament by it's unique identifier (id).
+	 *
 	 * @param int $tournament_id
 	 *
 	 * @return Tournament
@@ -58,6 +62,13 @@ class TournamentList implements IApiObjectList
 	/** @var array $tournaments_urls_list */
 	protected $tournaments_urls_list = [];
 
+	/**
+	 *   Gets tournament by its unique url (url).
+	 *
+	 * @param string $tournament_url
+	 *
+	 * @return Tournament
+	 */
 	public function getTournamentByUrl( string $tournament_url ): Tournament
 	{
 		return $this->tournaments[$this->tournaments_urls_list[$tournament_url]];

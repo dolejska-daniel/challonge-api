@@ -2,19 +2,18 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class ParticipantList
+ *   Class ParticipantList
  *
  * @property Participant[] $participants
- * @property int          $count
+ * @property int           $count
  *
  * @package ChallongeAPI\Objects
  */
 class ParticipantList implements IApiObjectList
 {
 	/**
-	 * ParticipantList constructor.
+	 *   ParticipantList constructor.
 	 *
 	 * @param array $data
 	 */
@@ -37,6 +36,8 @@ class ParticipantList implements IApiObjectList
 	public $participants;
 
 	/**
+	 *   Gets all the participants.
+	 *
 	 * @return Participant[]
 	 */
 	public function getParticipants(): array
@@ -45,6 +46,8 @@ class ParticipantList implements IApiObjectList
 	}
 
 	/**
+	 *   Gets tournament participant by it's unique identifier (id).
+	 *
 	 * @param int $participant_id
 	 *
 	 * @return Participant

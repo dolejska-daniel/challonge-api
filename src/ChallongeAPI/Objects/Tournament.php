@@ -2,9 +2,8 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class Tournament
+ *   Class Tournament
  *
  * @property int    $id
  * @property string $name
@@ -16,7 +15,7 @@ namespace ChallongeAPI\Objects;
 class Tournament extends ApiObject
 {
 	/**
-	 * Tournament constructor.
+	 *   Tournament constructor.
 	 *
 	 * @param array $settings
 	 */

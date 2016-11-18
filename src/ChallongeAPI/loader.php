@@ -1,5 +1,6 @@
 <?php
 
+//  PHP version check
 if (PHP_VERSION_ID < 70000)
 	trigger_error('This library requires PHP version 7.0.0 or newer!', E_USER_ERROR);
 

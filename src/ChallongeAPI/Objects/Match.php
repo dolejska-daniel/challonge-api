@@ -2,9 +2,8 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class Match
+ *   Class Match
  *
  * @property int    $id
  * @property string $identifier
@@ -20,7 +19,7 @@ namespace ChallongeAPI\Objects;
 class Match extends ApiObject
 {
 	/**
-	 * Match constructor.
+	 *   Match constructor.
 	 *
 	 * @param array $data
 	 */

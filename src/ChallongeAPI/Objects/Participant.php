@@ -2,9 +2,8 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class Participant
+ *   Class Participant
  *
  * @property int    $id
  * @property string $name
@@ -21,7 +20,7 @@ namespace ChallongeAPI\Objects;
 class Participant extends ApiObject
 {
 	/**
-	 * Participant constructor.
+	 *   Participant constructor.
 	 *
 	 * @param array $data
 	 */

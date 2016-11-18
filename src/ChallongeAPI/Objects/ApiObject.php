@@ -3,7 +3,7 @@
 namespace ChallongeAPI\Objects;
 
 /**
- * Class ApiObject
+ *   Class ApiObject
  *
  * @property $_data
  *
@@ -41,6 +41,8 @@ abstract class ApiObject implements IApiObject
 	private $_data;
 
 	/**
+	 *   Gets all the original data fetched from ChallongeAPI.
+	 *
 	 * @return array
 	 */
 	public function getData(): array

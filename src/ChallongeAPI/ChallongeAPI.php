@@ -1,7 +1,22 @@
 <?php
+/**
+ * Copyright (C) 2016  Daniel Dolejška
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 namespace ChallongeAPI;
-
 
 use ChallongeAPI\Exceptions;
 use ChallongeAPI\Objects\Attachment;
@@ -13,10 +28,23 @@ use ChallongeAPI\Objects\ParticipantList;
 use ChallongeAPI\Objects\Tournament;
 use ChallongeAPI\Objects\TournamentList;
 
+/**
+ *   Class ChallongeAPI
+ *
+ * @package ChallongeAPI
+ */
 class ChallongeAPI
 {
+	/** API used version constant. */
 	const
 		API_VERSION = 'v1';
+
+	/** Constants for cURL requests. */
+	const
+		METHOD_GET      = 'GET',
+		METHOD_POST     = 'POST',
+		METHOD_PUT      = 'PUT',
+		METHOD_DELETE   = 'DELETE';
 
 
 	/** @var array */
@@ -40,7 +68,7 @@ class ChallongeAPI
 
 
 	/**
-	 * ChallongeAPI constructor.
+	 *  ChallongeAPI constructor.
 	 *
 	 * @param array $settings
 	 *
@@ -73,7 +101,7 @@ class ChallongeAPI
 	 *
 	 * @return $this
 	 */
-	private function setEndpoint( $endpoint )
+	protected function setEndpoint( $endpoint )
 	{
 		$this->endpoint = $endpoint;
 		return $this;
@@ -87,7 +115,7 @@ class ChallongeAPI
 	 *
 	 * @return $this
 	 */
-	private function addQuery( $name, $value )
+	protected function addQuery( $name, $value )
 	{
 		if ($value !== null)
 			$this->query_data[$name] = $value;
@@ -102,9 +130,23 @@ class ChallongeAPI
 	 *
 	 * @return $this
 	 */
-	private function setData( $data )
+	protected function setData( $data )
 	{
 		$this->post_data = $data;
+		return $this;
+	}
+
+	/**
+	 *   Adds POST/PUT data to array.
+	 *
+	 * @param $name
+	 * @param $value
+	 *
+	 * @return $this
+	 */
+	protected function addData( $name, $value )
+	{
+		$this->post_data[$name] = $value;
 		return $this;
 	}
 
@@ -116,7 +158,7 @@ class ChallongeAPI
 	 * @throws Exceptions\APIException
 	 * @throws Exceptions\GeneralException
 	 */
-	final private function makeCall( $method = "GET" )
+	final protected function makeCall( $method = "GET" )
 	{
 		$url = $this->settings['api_url'] . '/' . self::API_VERSION . "/" . $this->endpoint . '.' . strtolower($this->settings['format'])
 			. "?api_key={$this->settings['api_key']}" . (!empty($this->query_data) ? '&' . http_build_query($this->query_data) : '' );
@@ -125,28 +167,29 @@ class ChallongeAPI
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		//  LOCALHOST FIX
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		//  If you're having problems with API requests (mainly on localhost)
+		//  change this cURL option to false
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
-		if ($method == 'GET')
+		if ($method == self::METHOD_GET)
 		{
 			curl_setopt($ch, CURLOPT_URL, $url);
 		}
-		elseif($method == 'POST')
+		elseif($method == self::METHOD_POST)
 		{
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_POSTFIELDS,
 				http_build_query($this->post_data));
 		}
-		elseif($method == 'PUT')
+		elseif($method == self::METHOD_PUT)
 		{
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_PUT, true);
 			curl_setopt($ch, CURLOPT_POSTFIELDS,
 				http_build_query($this->post_data));
 		}
-		elseif($method == 'DELETE')
+		elseif($method == self::METHOD_DELETE)
 		{
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
@@ -155,7 +198,6 @@ class ChallongeAPI
 			throw new Exceptions\GeneralException('Invalid method selected');
 
 		$response = curl_exec($ch);
-
 		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 		if ($response_code == 500)
@@ -197,13 +239,14 @@ class ChallongeAPI
 	 *
 	 * @return array
 	 */
-	private function result():array
+	protected function result(): array
 	{
 		return $this->result_data;
 	}
 
 
-	/** #################################
+	/**
+	 *  #################################
 	 *  ##
 	 *  ##   TOURNAMENTS
 	 *  ##
@@ -456,7 +499,8 @@ class ChallongeAPI
 	}
 
 
-	/** #################################
+	/**
+	 *  #################################
 	 *  ##
 	 *  ##   PARTICIPANTS
 	 *  ##
@@ -663,7 +707,8 @@ class ChallongeAPI
 	public function pShuffle( $tournament_url, string $subdomain = null ) { return $this->pRandomize(func_get_args()); }
 
 
-	/** #################################
+	/**
+	 *  #################################
 	 *  ##
 	 *  ##   MATCHES
 	 *  ##
@@ -745,7 +790,8 @@ class ChallongeAPI
 	}
 
 
-	/** #################################
+	/**
+	 *  #################################
 	 *  ##
 	 *  ##   ATTACHMENTS
 	 *  ##

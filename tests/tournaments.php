@@ -8,7 +8,7 @@ use ChallongeAPI\ChallongeAPI;
 
 //  Creates new instance of API wrapper
 $api = new ChallongeAPI([
-	'api_key' => 'X8VBSVUulzZGpzbMZvKRivwEBIKI6dHzIvoKvjCg',
+	'api_key' => 'YOUR_CHALLONGE_API_KEY',
 ]);
 
 //  This will fetch all YOUR tournaments (does not include tournaments created by organization subdomain) and place them to TournamentList object

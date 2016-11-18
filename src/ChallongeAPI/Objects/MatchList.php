@@ -2,19 +2,18 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class MatchList
+ *   Class MatchList
  *
- * @property Match[] $matches;
- * @property int          $count
+ * @property Match[] $matches
+ * @property int     $count
  *
  * @package ChallongeAPI\Objects
  */
 class MatchList implements IApiObjectList
 {
 	/**
-	 * MatchList constructor.
+	 *   MatchList constructor.
 	 *
 	 * @param array $data
 	 */
@@ -22,7 +21,7 @@ class MatchList implements IApiObjectList
 	{
 		foreach ($data as $match_data)
 		{
-			$m = new Participant($match_data);
+			$m = new Match($match_data);
 			$this->matches[$m->id] = $m;
 		}
 
@@ -37,6 +36,8 @@ class MatchList implements IApiObjectList
 	public $matches;
 
 	/**
+	 *   Gets all the matches.
+	 *
 	 * @return Match[]
 	 */
 	public function getMatches(): array
@@ -45,6 +46,8 @@ class MatchList implements IApiObjectList
 	}
 
 	/**
+	 *   Gets match by it's unique identifier (id).
+	 *
 	 * @param int $match_id
 	 *
 	 * @return Match

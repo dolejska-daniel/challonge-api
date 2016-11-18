@@ -1,5 +1,5 @@
 # Challonge API PHP7 wrapper
-This is Challonge API wrapper for PHP7 ready to be used. Easy usage and clean code.
+This is Challonge API wrapper for PHP7! Just ready to be used. With easy usage and clean code.
 
 ```php
 $api = new ChallongeAPI([ 'api_key' => 'YOUR_CHALLONGE_API_KEY' ]);

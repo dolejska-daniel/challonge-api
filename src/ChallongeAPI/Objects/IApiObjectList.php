@@ -3,14 +3,14 @@
 namespace ChallongeAPI\Objects;
 
 /**
- * Interface IApiObjectList
+ *   Interface IApiObjectList
  *
  * @package ChallongeAPI\Objects
  */
 interface IApiObjectList
 {
 	/**
-	 * IApiObjectList constructor.
+	 *   IApiObjectList constructor.
 	 *
 	 * @param array $data
 	 */

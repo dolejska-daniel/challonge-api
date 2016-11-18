@@ -2,9 +2,8 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class Attachment
+ *   Class Attachment
  *
  * @property int    $id
  * @property int    $match_id
@@ -18,7 +17,7 @@ namespace ChallongeAPI\Objects;
 class Attachment extends ApiObject
 {
 	/**
-	 * Attachment constructor.
+	 *   Attachment constructor.
 	 *
 	 * @param array $settings
 	 */

@@ -2,9 +2,8 @@
 
 namespace ChallongeAPI\Objects;
 
-
 /**
- * Class AttachmentList
+ *   Class AttachmentList
  *
  * @property Attachment[] $attachments
  * @property int          $count
@@ -14,7 +13,7 @@ namespace ChallongeAPI\Objects;
 class AttachmentList implements IApiObjectList
 {
 	/**
-	 * AttachmentList constructor.
+	 *   AttachmentList constructor.
 	 *
 	 * @param array $data
 	 */
@@ -37,6 +36,8 @@ class AttachmentList implements IApiObjectList
 	public $attachments;
 
 	/**
+	 *   Gets all the attachments.
+	 *
 	 * @return Attachment[]
 	 */
 	public function getAttachments(): array
@@ -45,6 +46,8 @@ class AttachmentList implements IApiObjectList
 	}
 
 	/**
+	 *   Gets attachment by it's unique identifier (id).
+	 *
 	 * @param int $attachment_id
 	 *
 	 * @return Attachment
