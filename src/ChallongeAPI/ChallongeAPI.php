@@ -18,7 +18,6 @@
 
 namespace ChallongeAPI;
 
-use ChallongeAPI\Exceptions;
 use ChallongeAPI\Objects\Attachment;
 use ChallongeAPI\Objects\AttachmentList;
 use ChallongeAPI\Objects\Match;
@@ -27,6 +26,9 @@ use ChallongeAPI\Objects\Participant;
 use ChallongeAPI\Objects\ParticipantList;
 use ChallongeAPI\Objects\Tournament;
 use ChallongeAPI\Objects\TournamentList;
+
+use ChallongeAPI\Exceptions\SettingsException;
+
 
 /**
  *   Class ChallongeAPI
@@ -72,7 +74,7 @@ class ChallongeAPI
 	 *
 	 * @param array $settings
 	 *
-	 * @throws Exceptions\GeneralException
+	 * @throws SettingsException
 	 */
 	public function __construct( array $settings )
 	{
@@ -82,11 +84,10 @@ class ChallongeAPI
 
 		foreach ($required_settings as $key)
 			if (array_search($key, array_keys($settings), true) === false)
-				throw new Exceptions\GeneralException("Required settings parameter '$key' was not specified!");
+				throw new SettingsException("Required settings parameter '$key' was not specified!");
 
-		$allowed_settings = [
-			'api_key',
-		];
+		$allowed_settings = array_merge([
+		], $required_settings);
 
 		foreach ($allowed_settings as $key)
 			if (array_search($key, array_keys($settings), true) !== false)
