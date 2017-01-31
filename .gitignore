@@ -1,4 +1,6 @@
 # Ignored files
+composer.lock
 
 # Ignored dirs
 .idea/
+vendor/
