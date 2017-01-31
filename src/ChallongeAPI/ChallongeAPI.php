@@ -256,8 +256,6 @@ class ChallongeAPI
 	/**
 	 *    (Index) Retrieve a set of tournaments created with your account.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/index
-	 *
 	 * @param string|null    $subdomain
 	 * @param string|null    $state
 	 * @param string|null    $type
@@ -265,6 +263,7 @@ class ChallongeAPI
 	 * @param \DateTime|null $created_before
 	 *
 	 * @return TournamentList
+	 * @link http://api.challonge.com/v1/documents/tournaments/index
 	 */
 	public function tList( string $subdomain = null, string $state = null, string $type = null, \DateTime $created_after = null, \DateTime $created_before = null ): TournamentList
 	{
@@ -292,17 +291,16 @@ class ChallongeAPI
 	/**
 	 *   (Create) Create a new tournament.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/create
-	 *
-	 * @param array|\Traversable $data
+	 * @param array $data
 	 *
 	 * @return Tournament
+	 * @link http://api.challonge.com/v1/documents/tournaments/create
 	 */
-	public function tCreate( $data ): Tournament
+	public function tCreate( array $data ): Tournament
 	{
 		$this->setEndpoint('tournaments');
 
-		if (!isset($data->tournament))
+		if (!isset($data['tournament']))
 			$data = array( 'tournament' => $data );
 		$this->setData($data);
 
@@ -313,14 +311,13 @@ class ChallongeAPI
 	/**
 	 *   (Show) Retrieve a single tournament record created with your account.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/show
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param bool        $include_participants
 	 * @param bool        $include_matches
 	 *
 	 * @return Tournament
+	 * @link http://api.challonge.com/v1/documents/tournaments/show
 	 */
 	public function tGet( $tournament_url, string $subdomain = null, bool $include_participants = false, bool $include_matches = false ): Tournament
 	{
@@ -336,19 +333,18 @@ class ChallongeAPI
 	/**
 	 *   (Update) Update a tournament's attributes.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/update
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param array       $data
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/update
 	 */
-	public function tEdit( $tournament_url, string $subdomain = null, $data )
+	public function tEdit( $tournament_url, string $subdomain = null, array $data )
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url);
 
-		if (!isset($data->tournament))
+		if (!isset($data['tournament']))
 			$data = array( 'tournament' => $data );
 		$this->setData($data);
 
@@ -359,12 +355,11 @@ class ChallongeAPI
 	/**
 	 *   (Destroy) Deletes a tournament along with all its associated records. There is no undo, so use with care!
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/destroy
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/destroy
 	 */
 	public function tDelete( $tournament_url, string $subdomain = null )
 	{
@@ -383,14 +378,13 @@ class ChallongeAPI
 	 *
 	 *   NOTE: Checked in participants on the waiting list will be promoted if slots become available.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/process_check_ins
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param bool        $include_participants
 	 * @param bool        $include_matches
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/process_check_ins
 	 */
 	public function tProcessCheckins( $tournament_url, string $subdomain = null, bool $include_participants = false, bool $include_matches = false )
 	{
@@ -409,14 +403,13 @@ class ChallongeAPI
 	 *      Makes all participants active and clears their checked_in_at times.
 	 *      Transitions the tournament state from 'checking_in' or 'checked_in' to 'pending'
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/abort_check_in
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param bool        $include_participants
 	 * @param bool        $include_matches
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/abort_check_in
 	 */
 	public function tAbortCheckin( $tournament_url, string $subdomain = null, bool $include_participants = false, bool $include_matches = false )
 	{
@@ -432,14 +425,13 @@ class ChallongeAPI
 	/**
 	 *   (Start) Start a tournament, opening up first round matches for score reporting. The tournament must have at least 2 participants.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/start
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param bool        $include_participants
 	 * @param bool        $include_matches
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/start
 	 */
 	public function tStart( $tournament_url, string $subdomain = null, bool $include_participants = false, bool $include_matches = false )
 	{
@@ -455,14 +447,13 @@ class ChallongeAPI
 	/**
 	 *   (Finalize) Finalize a tournament that has had all match scores submitted, rendering its results permanent.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/finalize
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param bool        $include_participants
 	 * @param bool        $include_matches
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/finalize
 	 */
 	public function tFinalize( $tournament_url, string $subdomain = null, bool $include_participants = false, bool $include_matches = false )
 	{
@@ -478,14 +469,13 @@ class ChallongeAPI
 	/**
 	 *   (Reset) Reset a tournament, clearing all of its scores and attachments. You can then add/remove/edit participants before starting the tournament again.
 	 *
-	 * @link http://api.challonge.com/v1/documents/tournaments/reset
-	 *
-	 * @param string|int  $tournament_url
-	 * @param string|null $subdomain
-	 * @param bool        $include_participants
-	 * @param bool        $include_matches
+	 * @param string|int $tournament_url
+	 * @param string     $subdomain
+	 * @param bool       $include_participants
+	 * @param bool       $include_matches
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/tournaments/reset
 	 */
 	public function tReset( $tournament_url, string $subdomain = null, bool $include_participants = false, bool $include_matches = false )
 	{
@@ -496,6 +486,30 @@ class ChallongeAPI
 
 		$this->makeCall('POST');
 		return $this->result();
+	}
+
+	/**
+	 * @param string|int $tournament_url
+	 * @param string     $subdomain
+	 *
+	 * @return ParticipantList
+	 */
+	public function tStandings( $tournament_url, string $subdomain = null ): ParticipantList
+	{
+		$participant_list = $this->pList($tournament_url, $subdomain);
+
+		/**
+		 * @var Participant $p1
+		 * @var Participant $p2
+		 */
+		uasort($participant_list->participants, function( $p1, $p2 ) {
+			if ($p1->final_rank == $p2->final_rank)
+				return 0;
+
+			return ($p1->final_rank < $p2->final_rank) ? -1 : 1;
+		});
+
+		return $participant_list;
 	}
 
 
@@ -510,12 +524,11 @@ class ChallongeAPI
 	/**
 	 *   (Index) Retrieve a tournament's participant list.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/index
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 *
 	 * @return ParticipantList
+	 * @link http://api.challonge.com/v1/documents/participants/index
 	 */
 	public function pList( $tournament_url, string $subdomain = null ): ParticipantList
 	{
@@ -528,15 +541,14 @@ class ChallongeAPI
 	/**
 	 *   (Create) Add a participant to a tournament (up until it is started).
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/create
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param array       $data
 	 *
 	 * @return Participant
+	 * @link http://api.challonge.com/v1/documents/participants/create
 	 */
-	public function pAdd( $tournament_url, string $subdomain = null, $data ): Participant
+	public function pAdd( $tournament_url, string $subdomain = null, array $data ): Participant
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants');
 
@@ -552,15 +564,14 @@ class ChallongeAPI
 	 *   (Bulk Add) Bulk add participants to a tournament (up until it is started). If an invalid participant is detected,
 	 *   bulk participant creation will halt and any previously added participants (from this API request) will be rolled back.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/bulk_add
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param array       $data
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/participants/bulk_add
 	 */
-	public function pBulkAdd( $tournament_url, string $subdomain = null, $data )
+	public function pBulkAdd( $tournament_url, string $subdomain = null, array $data )
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/bulk_add');
 
@@ -575,14 +586,13 @@ class ChallongeAPI
 	/**
 	 *   (Show) Retrieve a single participant record for a tournament.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/show
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 * @param bool        $include_matches
 	 *
 	 * @return Participant
+	 * @link http://api.challonge.com/v1/documents/participants/show
 	 */
 	public function pGet( $tournament_url, string $subdomain = null, int $participant_id, bool $include_matches = false ): Participant
 	{
@@ -597,16 +607,15 @@ class ChallongeAPI
 	/**
 	 *   (Update) Update the attributes of a tournament participant.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/update
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param int                $participant_id
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param int         $participant_id
+	 * @param array       $data
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/participants/update
 	 */
-	public function pEdit( $tournament_url, string $subdomain = null, int $participant_id, $data )
+	public function pEdit( $tournament_url, string $subdomain = null, int $participant_id, array $data )
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/' . $participant_id);
 
@@ -621,13 +630,12 @@ class ChallongeAPI
 	/**
 	 *   (Check In) Checks a participant in, setting checked_in_at to the current time.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/check_in
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/participants/check_in
 	 */
 	public function pCheckIn( $tournament_url, string $subdomain = null, int $participant_id )
 	{
@@ -640,13 +648,12 @@ class ChallongeAPI
 	/**
 	 *   (Undo Check In) Marks a participant as having not checked in, setting checked_in_at to nil.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/undo_check_in
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/participants/undo_check_in
 	 */
 	public function pUndoCheckIn( $tournament_url, string $subdomain = null, int $participant_id  )
 	{
@@ -660,13 +667,12 @@ class ChallongeAPI
 	 *   (Destroy) If the tournament has not started, delete a participant, automatically filling in the abandoned seed number.
 	 *   If tournament is underway, mark a participant inactive, automatically forfeiting his/her remaining matches.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/destroy
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/participants/destroy
 	 */
 	public function pDelete( $tournament_url, string $subdomain = null, int $participant_id  )
 	{
@@ -679,12 +685,11 @@ class ChallongeAPI
 	/**
 	 *   (Randomize) Randomize seeds among participants. Only applicable before a tournament has started.
 	 *
-	 * @link http://api.challonge.com/v1/documents/participants/randomize
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/participants/randomize
 	 */
 	public function pRandomize( $tournament_url, string $subdomain = null )
 	{
@@ -693,18 +698,6 @@ class ChallongeAPI
 		$this->makeCall('POST');
 		return $this->result();
 	}
-
-	/**
-	 *   (Randomize) Randomize seeds among participants. Only applicable before a tournament has started. Alias for pRandomize.
-	 *
-	 * @link http://api.challonge.com/v1/documents/participants/randomize
-	 *
-	 * @param string|int  $tournament_url
-	 * @param string|null $subdomain
-	 *
-	 * @return array
-	 */
-	public function pShuffle( $tournament_url, string $subdomain = null ) { return $this->pRandomize(func_get_args()); }
 
 
 	/**
@@ -718,14 +711,13 @@ class ChallongeAPI
 	/**
 	 *   (Index) Retrieve a tournament's match list.
 	 *
-	 * @link http://api.challonge.com/v1/documents/matches/index
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param string      $state all, pending, open, complete
 	 * @param int         $participant_id
 	 *
 	 * @return MatchList
+	 * @link http://api.challonge.com/v1/documents/matches/index
 	 */
 	public function mList( $tournament_url, string $subdomain = null, $state = null, int $participant_id = null ): MatchList
 	{
@@ -744,14 +736,13 @@ class ChallongeAPI
 	/**
 	 *   (Show) Retrieve a single match record for a tournament.
 	 *
-	 * @link http://api.challonge.com/v1/documents/matches/show
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $match_id
 	 * @param bool        $include_attachments
 	 *
 	 * @return Match
+	 * @link http://api.challonge.com/v1/documents/matches/show
 	 */
 	public function mGet( $tournament_url, string $subdomain = null, int $match_id, bool $include_attachments = false ): Match
 	{
@@ -768,20 +759,19 @@ class ChallongeAPI
 	 *
 	 *   * If you're updating winner_id, scores_csv must also be provided. You may, however, update score_csv without providing winner_id for live score updates.
 	 *
-	 * @link http://api.challonge.com/v1/documents/matches/update
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param int                $match_id
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param int         $match_id
+	 * @param array       $data
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/matches/update
 	 */
-	public function mEdit( $tournament_url, string $subdomain = null, int $match_id, $data )
+	public function mEdit( $tournament_url, string $subdomain = null, int $match_id, array $data )
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id);
 
-		if (!isset($data->match))
+		if (!isset($data['match']))
 			$data = array( 'match' => $data );
 		$this->setData($data);
 
@@ -801,13 +791,12 @@ class ChallongeAPI
 	/**
 	 *   (Index) Retrieve a match's attachments.
 	 *
-	 * @link http://api.challonge.com/v1/documents/match_attachments/index
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $match_id
 	 *
 	 * @return AttachmentList
+	 * @link http://api.challonge.com/v1/documents/match_attachments/index
 	 */
 	public function aList( $tournament_url, string $subdomain = null, int $match_id ): AttachmentList
 	{
@@ -821,16 +810,15 @@ class ChallongeAPI
 	 *   (Create) Add a file, link, or text attachment to a match. NOTE: The associated tournament's "accept_attachments"
 	 *   attribute must be true for this action to succeed.
 	 *
-	 * @link http://api.challonge.com/v1/documents/match_attachments/create
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param int                $match_id
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param int         $match_id
+	 * @param array       $data
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/match_attachments/create
 	 */
-	public function aAdd( $tournament_url, string $subdomain = null, int $match_id, $data )
+	public function aAdd( $tournament_url, string $subdomain = null, int $match_id, array $data )
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id . '/attachments');
 
@@ -845,14 +833,13 @@ class ChallongeAPI
 	/**
 	 *   (Show) Retrieve a single match attachment record.
 	 *
-	 * @link http://api.challonge.com/v1/documents/match_attachments/show
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $match_id
 	 * @param int         $attachment_id
 	 *
 	 * @return Attachment
+	 * @link http://api.challonge.com/v1/documents/match_attachments/show
 	 */
 	public function aGet( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id ): Attachment
 	{
@@ -865,17 +852,16 @@ class ChallongeAPI
 	/**
 	 *   (Update) Update the attributes of a match attachment.
 	 *
-	 * @link http://api.challonge.com/v1/documents/match_attachments/update
-	 *
-	 * @param string|int         $tournament_url
-	 * @param string|null        $subdomain
-	 * @param int                $match_id
-	 * @param int                $attachment_id
-	 * @param array|\Traversable $data
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param int         $match_id
+	 * @param int         $attachment_id
+	 * @param array       $data
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/match_attachments/update
 	 */
-	public function aEdit( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id, $data )
+	public function aEdit( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id, array $data )
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id . '/attachments/' . $attachment_id);
 
@@ -890,14 +876,13 @@ class ChallongeAPI
 	/**
 	 *   (Destroy) Delete a match attachment.
 	 *
-	 * @link http://api.challonge.com/v1/documents/match_attachments/destroy
-	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $match_id
 	 * @param int         $attachment_id
 	 *
 	 * @return array
+	 * @link http://api.challonge.com/v1/documents/match_attachments/destroy
 	 */
 	public function aDelete( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id )
 	{

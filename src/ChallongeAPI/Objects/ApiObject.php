@@ -18,9 +18,6 @@ abstract class ApiObject implements IApiObject
 	 */
 	public function __construct( array $data )
 	{
-		if ($data instanceof \Traversable)
-			$data = iterator_to_array($data);
-
 		$object_keys = [
 			'tournament',
 			'participant',
@@ -34,6 +31,11 @@ abstract class ApiObject implements IApiObject
 				$data = $data[$key];
 
 		$this->_data = $data;
+
+		// Assigns data to class properties
+		foreach ($data as $property => $value)
+			if (property_exists($this, $property))
+				$this->$property = $value;
 	}
 
 

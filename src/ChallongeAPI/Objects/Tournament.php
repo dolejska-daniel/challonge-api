@@ -14,22 +14,6 @@ namespace ChallongeAPI\Objects;
  */
 class Tournament extends ApiObject
 {
-	/**
-	 *   Tournament constructor.
-	 *
-	 * @param array $settings
-	 */
-	public function __construct( array $settings )
-	{
-		// Trait initialization
-		parent::__construct($settings);
-
-		// Assigns data to class properties
-		foreach ($this->getData() as $property => $value)
-			if (property_exists(self::class, $property))
-				$this->$property = $value;
-	}
-
 	/** @var int $id */
 	public $id;
 

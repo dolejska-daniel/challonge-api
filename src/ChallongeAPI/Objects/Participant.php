@@ -8,6 +8,7 @@ namespace ChallongeAPI\Objects;
  * @property int    $id
  * @property string $name
  * @property int    $tournament_id
+ * @property int    $final_rank
  * @property bool   $active
  * @property bool   $checked_in
  * @property string $checked_in_at
@@ -19,23 +20,6 @@ namespace ChallongeAPI\Objects;
  */
 class Participant extends ApiObject
 {
-	/**
-	 *   Participant constructor.
-	 *
-	 * @param array $data
-	 */
-	public function __construct( array $data )
-	{
-		// Trait initialization
-		parent::__construct($data);
-
-		// Assigns data to class properties
-		foreach ($this->getData() as $property => $value)
-			if (property_exists(self::class, $property))
-				$this->$property = $value;
-	}
-
-
 	/** @var int */
 	public $id;
 
@@ -44,6 +28,9 @@ class Participant extends ApiObject
 
 	/** @var int */
 	public $tournament_id;
+
+	/** @var int */
+	public $final_rank;
 
 	/** @var bool */
 	public $active;
