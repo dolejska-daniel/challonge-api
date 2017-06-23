@@ -325,7 +325,7 @@ class ChallongeAPI
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url);
 
 		$this->addQuery('include_participants', $include_participants);
-		$this->addQuery('include_maatches', $include_matches);
+		$this->addQuery('include_matches', $include_matches);
 
 		$this->makeCall();
 		return new Tournament($this->result());
@@ -392,7 +392,7 @@ class ChallongeAPI
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/process_check_ins');
 
 		$this->addQuery('include_participants', $include_participants);
-		$this->addQuery('include_maatches', $include_matches);
+		$this->addQuery('include_matches', $include_matches);
 
 		$this->makeCall('POST');
 		return $this->result();
@@ -417,7 +417,7 @@ class ChallongeAPI
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/abort_check_in');
 
 		$this->addQuery('include_participants', $include_participants);
-		$this->addQuery('include_maatches', $include_matches);
+		$this->addQuery('include_matches', $include_matches);
 
 		$this->makeCall('POST');
 		return $this->result();
@@ -439,7 +439,7 @@ class ChallongeAPI
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/start');
 
 		$this->addQuery('include_participants', $include_participants);
-		$this->addQuery('include_maatches', $include_matches);
+		$this->addQuery('include_matches', $include_matches);
 
 		$this->makeCall('POST');
 		return $this->result();
@@ -461,7 +461,7 @@ class ChallongeAPI
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/finalize');
 
 		$this->addQuery('include_participants', $include_participants);
-		$this->addQuery('include_maatches', $include_matches);
+		$this->addQuery('include_matches', $include_matches);
 
 		$this->makeCall('POST');
 		return $this->result();
@@ -483,7 +483,7 @@ class ChallongeAPI
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/reset');
 
 		$this->addQuery('include_participants', $include_participants);
-		$this->addQuery('include_maatches', $include_matches);
+		$this->addQuery('include_matches', $include_matches);
 
 		$this->makeCall('POST');
 		return $this->result();

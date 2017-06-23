@@ -4,3 +4,4 @@ composer.lock
 # Ignored dirs
 .idea/
 vendor/
+tests/Coverage/
