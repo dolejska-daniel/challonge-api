@@ -31,7 +31,7 @@ class LibraryTest extends TestCase
 	public function testInit()
 	{
 		$api = new ChallongeAPI([
-			'api_key' => getenv('API_KEY'),
+			ChallongeAPI::SET_API_KEY => getenv('API_KEY'),
 		]);
 
 		$this->assertInstanceOf(ChallongeAPI::class, $api);

@@ -48,6 +48,10 @@ class ChallongeAPI
 		METHOD_PUT      = 'PUT',
 		METHOD_DELETE   = 'DELETE';
 
+	const
+		SET_API_KEY    = 'SET_API_KEY',
+		SET_VERIFY_SSL = 'SET_VERIFY_SSL';
+
 
 	/** @var array */
 	protected $settings = array(
@@ -79,7 +83,7 @@ class ChallongeAPI
 	public function __construct( array $settings )
 	{
 		$required_settings = [
-			'api_key',
+			self::SET_API_KEY,
 		];
 
 		foreach ($required_settings as $key)
@@ -94,6 +98,64 @@ class ChallongeAPI
 				$this->settings[$key] = $settings[$key];
 	}
 
+
+	/**
+	 *   Returns vaue of requested key from settings.
+	 *
+	 * @param string     $name
+	 * @param mixed|null $defaultValue
+	 *
+	 * @return mixed
+	 */
+	public function getSetting( string $name, $defaultValue = null )
+	{
+		return $this->isSettingSet($name)
+			? $this->settings[$name]
+			: $defaultValue;
+	}
+
+	/**
+	 *   Sets new value for specified key in settings.
+	 *
+	 * @param string $name
+	 * @param mixed  $value
+	 *
+	 * @return ChallongeAPI
+	 *
+	 */
+	public function setSetting( string $name, $value ): self
+	{
+		$this->settings[$name] = $value;
+
+		return $this;
+	}
+
+	/**
+	 *   Sets new values for specified set of keys in settings.
+	 *
+	 * @param array $values
+	 *
+	 * @return ChallongeAPI
+	 */
+	public function setSettings( array $values ): self
+	{
+		foreach ($values as $name => $value)
+			$this->setSetting($name, $value);
+
+		return $this;
+	}
+
+	/**
+	 *   Checks if specified settings key is set.
+	 *
+	 * @param string $name
+	 *
+	 * @return bool
+	 */
+	public function isSettingSet( string $name ): bool
+	{
+		return isset($this->settings[$name]) && !is_null($this->settings[$name]);
+	}
 
 	/**
 	 *   Sets call target for script.
@@ -156,13 +218,13 @@ class ChallongeAPI
 	 *
 	 * @param string $method
 	 *
-	 * @throws Exceptions\APIException
-	 * @throws Exceptions\GeneralException
+	 * @throws Exceptions\RequestException
+	 * @throws Exceptions\ServerException
 	 */
 	final protected function makeCall( $method = "GET" )
 	{
-		$url = $this->settings['api_url'] . '/' . self::API_VERSION . "/" . $this->endpoint . '.' . strtolower($this->settings['format'])
-			. "?api_key={$this->settings['api_key']}" . (!empty($this->query_data) ? '&' . http_build_query($this->query_data) : '' );
+		$url = $this->getSetting('api_url') . '/' . self::API_VERSION . "/" . $this->endpoint . '.' . strtolower($this->getSetting('format'))
+			. "?api_key={$this->getSetting(self::SET_API_KEY)}" . (!empty($this->query_data) ? '&' . http_build_query($this->query_data) : '' );
 
 		$ch = curl_init();
 
@@ -170,7 +232,7 @@ class ChallongeAPI
 
 		//  If you're having problems with API requests (mainly on localhost)
 		//  change this cURL option to false
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->getSetting(self::SET_VERIFY_SSL));
 
 		if ($method == self::METHOD_GET)
 		{
@@ -186,7 +248,7 @@ class ChallongeAPI
 		elseif($method == self::METHOD_PUT)
 		{
 			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_PUT, true);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
 			curl_setopt($ch, CURLOPT_POSTFIELDS,
 				http_build_query($this->post_data));
 		}
@@ -196,43 +258,56 @@ class ChallongeAPI
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 		}
 		else
-			throw new Exceptions\GeneralException('Invalid method selected');
+			throw new Exceptions\RequestException('Invalid method selected');
 
 		$response = curl_exec($ch);
 		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-		if ($response_code == 500)
+		if (($curl_errno = curl_errno($ch)) !== 0)
 		{
-			throw new Exceptions\APIException('Internal server error');
-		}
-		elseif ($response_code == 422)
-		{
-			throw new Exceptions\APIException('Validation error');
-		}
-		elseif ($response_code == 406)
-		{
-			throw new Exceptions\APIException('Request not supported');
-		}
-		elseif ($response_code == 404)
-		{
-			throw new Exceptions\APIException('Resource not found');
-		}
-		elseif ($response_code == 401)
-		{
-			throw new Exceptions\APIException('Forbidden');
-		}
-		elseif ($response_code == 400)
-		{
-			throw new Exceptions\APIException('Bad request');
+			$curl_error = curl_error($ch);
+			$curl_error_info = "";
+			if ($curl_errno == 60)
+			{
+				$curl_error_info = " (if you are on localhost, try setting the RiotAPI::SET_VERIFY_SSL to false)";
+			}
+
+			throw new Exceptions\RequestException('cURL error ocurred: ' . $curl_error . $curl_error_info, $curl_errno);
 		}
 
 		$this->result_data  = json_decode($response, true);
 		$this->query_data   = array();
 
+		if ($response_code == 500)
+		{
+			throw new Exceptions\ServerException('Internal server error.');
+		}
+		elseif ($response_code == 422)
+		{
+			$info = implode(', ', $this->result_data->errors);
+			throw new Exceptions\RequestException("Request data validation error: {$info}.");
+		}
+		elseif ($response_code == 406)
+		{
+			throw new Exceptions\RequestException('Request format not supported.');
+		}
+		elseif ($response_code == 404)
+		{
+			throw new Exceptions\RequestException('Resource not found.');
+		}
+		elseif ($response_code == 401)
+		{
+			throw new Exceptions\RequestException('Unauthorized.');
+		}
+		elseif ($response_code == 400)
+		{
+			throw new Exceptions\RequestException('Bad request.');
+		}
+
 		curl_close ($ch);
 
 		if (isset($this->result_data->errors) && !empty($this->result_data->errors))
-			throw new Exceptions\APIException(reset($this->result_data->errors));
+			throw new Exceptions\RequestException(reset($this->result_data->errors));
 	}
 
 	/**
