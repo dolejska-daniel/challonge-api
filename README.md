@@ -4,6 +4,10 @@
 
 [![build status](https://gitlab.dolejska.me/dolejskad/challonge-api/badges/master/build.svg)](https://gitlab.dolejska.me/dolejskad/challonge-api/commits/master)
 [![coverage report](https://gitlab.dolejska.me/dolejskad/challonge-api/badges/master/coverage.svg)](https://gitlab.dolejska.me/dolejskad/challonge-api/commits/master)
+[![GitHub release](https://img.shields.io/github/release/dolejska-daniel/challonge-api.svg)](https://github.com/dolejska-daniel/riot-api)
+[![GitHub pre release](https://img.shields.io/github/release/dolejska-daniel/challonge-api/all.svg?label=pre%20release)](https://github.com/dolejska-daniel/riot-api)
+[![Packagist](https://img.shields.io/packagist/v/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/riot-api)
+[![Packagist](https://img.shields.io/packagist/l/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/riot-api)
 
 # Table of Contents
 
