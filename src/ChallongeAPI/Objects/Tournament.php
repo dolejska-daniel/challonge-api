@@ -5,11 +5,6 @@ namespace ChallongeAPI\Objects;
 /**
  *   Class Tournament
  *
- * @property int    $id
- * @property string $name
- * @property string $url
- * @property string $full_challonge_url
- *
  * @package ChallongeAPI\Objects
  */
 class Tournament extends ApiObject

@@ -49,16 +49,44 @@ class ChallongeAPI
 		METHOD_DELETE   = 'DELETE';
 
 	const
-		SET_API_KEY    = 'SET_API_KEY',
-		SET_VERIFY_SSL = 'SET_VERIFY_SSL';
+		SET_API_KEY         = 'SET_API_KEY',
+		SET_VERIFY_SSL      = 'SET_VERIFY_SSL',
+		SET_BASE_API_URL    = 'SET_BASE_API_URL',
+		SET_RESPONSE_FORMAT = 'SET_RESPONSE_FORMAT',
+		SET_USE_DUMMYDATA   = 'SET_USE_DUMMYDATA',
+		SET_SAVE_DUMMYDATA  = 'SET_SAVE_DUMMYDATA';
 
 
 	/** @var array */
-	protected $settings = array(
-		'api_key'   => null,
-		'api_url'   => 'https://api.challonge.com',
-		'format'    => 'json',
-	);
+	protected $settings = [
+		self::SET_API_KEY         => null,
+		self::SET_BASE_API_URL    => 'https://api.challonge.com',
+		self::SET_RESPONSE_FORMAT => 'json',
+	];
+
+	/**
+	 * List of settings keys that are required when
+	 * initializing the library.
+	 *
+	 * @var array
+	 */
+	protected $required_settings = [
+		self::SET_API_KEY,
+	];
+
+	/**
+	 * List of settings keys that are allowed when
+	 * initializing the library.
+	 *
+	 * @var array
+	 */
+	protected $allowed_settings = [
+		self::SET_API_KEY,
+		self::SET_VERIFY_SSL,
+		self::SET_USE_DUMMYDATA,
+		self::SET_SAVE_DUMMYDATA,
+	];
+
 
 	/** @var string */
 	protected $endpoint;
@@ -69,8 +97,21 @@ class ChallongeAPI
 	/** @var array */
 	protected $post_data = array();
 
+
+	/** @var string */
+	protected $result_data_raw;
+
 	/** @var array */
 	protected $result_data;
+
+	/** @var array */
+	protected $result_headers;
+
+	/** @var int */
+	protected $result_code;
+
+	/** @var string */
+	protected $request_method;
 
 
 	/**
@@ -82,19 +123,12 @@ class ChallongeAPI
 	 */
 	public function __construct( array $settings )
 	{
-		$required_settings = [
-			self::SET_API_KEY,
-		];
-
-		foreach ($required_settings as $key)
-			if (array_search($key, array_keys($settings), true) === false)
+		foreach ($this->required_settings as $key)
+			if (isset($settings[$key]) === false)
 				throw new SettingsException("Required settings parameter '$key' was not specified!");
 
-		$allowed_settings = array_merge([
-		], $required_settings);
-
-		foreach ($allowed_settings as $key)
-			if (array_search($key, array_keys($settings), true) !== false)
+		foreach ($this->allowed_settings as $key)
+			if (isset($settings[$key]))
 				$this->settings[$key] = $settings[$key];
 	}
 
@@ -223,12 +257,12 @@ class ChallongeAPI
 	 */
 	final protected function makeCall( $method = "GET" )
 	{
-		$url = $this->getSetting('api_url') . '/' . self::API_VERSION . "/" . $this->endpoint . '.' . strtolower($this->getSetting('format'))
-			. "?api_key={$this->getSetting(self::SET_API_KEY)}" . (!empty($this->query_data) ? '&' . http_build_query($this->query_data) : '' );
+		$url = $this->_getUrl();
 
 		$ch = curl_init();
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
 
 		//  If you're having problems with API requests (mainly on localhost)
 		//  change this cURL option to false
@@ -260,23 +294,42 @@ class ChallongeAPI
 		else
 			throw new Exceptions\RequestException('Invalid method selected');
 
-		$response = curl_exec($ch);
-		$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$this->request_method  = $method;
+
+		if ($this->getSetting(self::SET_USE_DUMMYDATA, false))
+		{
+			//  TODO: different behaviour with dummydata saving enabled
+			$this->_loadDummyData($headers, $response, $response_code);
+		}
+
+		if (isset($headers) === false && isset($response) === false && isset($response_code) === false)
+		{
+			$raw_data = curl_exec($ch);
+			$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+
+			$headers = $this->parseHeaders(substr($raw_data, 0, $header_size));
+			$response = substr($raw_data, $header_size);
+			$response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		}
 
 		if (($curl_errno = curl_errno($ch)) !== 0)
 		{
 			$curl_error = curl_error($ch);
-			$curl_error_info = "";
-			if ($curl_errno == 60)
-			{
-				$curl_error_info = " (if you are on localhost, try setting the RiotAPI::SET_VERIFY_SSL to false)";
-			}
-
-			throw new Exceptions\RequestException('cURL error ocurred: ' . $curl_error . $curl_error_info, $curl_errno);
+			throw new Exceptions\RequestException('cURL error ocurred: ' . $curl_error, $curl_errno);
 		}
 
-		$this->result_data  = json_decode($response, true);
-		$this->query_data   = array();
+		curl_close($ch);
+
+		$this->result_data_raw = $response;
+		$this->result_data     = json_decode($response, true);
+		$this->result_code     = $response_code;
+		$this->result_headers  = $headers;
+
+		if ($this->getSetting(self::SET_SAVE_DUMMYDATA, false))
+			$this->_saveDummyData();
+
+		$this->query_data      = [];
+		$this->post_data       = [];
 
 		if ($response_code == 500)
 		{
@@ -304,10 +357,69 @@ class ChallongeAPI
 			throw new Exceptions\RequestException('Bad request.');
 		}
 
-		curl_close ($ch);
-
 		if (isset($this->result_data->errors) && !empty($this->result_data->errors))
 			throw new Exceptions\RequestException(reset($this->result_data->errors));
+	}
+
+	public static function parseHeaders( $requestHeaders ): array
+	{
+		$r = array();
+		foreach (explode(PHP_EOL, $requestHeaders) as $line)
+		{
+			if (strpos($line, ':'))
+			{
+				$e = explode(": ", $line);
+				$r[$e[0]] = @$e[1];
+			}
+			elseif (strlen($line))
+				$r[] = $line;
+		}
+
+		return $r;
+	}
+
+	protected function _getUrl()
+	{
+		$baseUrl  = $this->getSetting(self::SET_BASE_API_URL);
+		$version  = self::API_VERSION;
+		$endpoint = $this->endpoint;
+		$format   = strtolower($this->getSetting(self::SET_RESPONSE_FORMAT));
+		$query    = "?api_key={$this->getSetting(self::SET_API_KEY)}" . (!empty($this->query_data) ? '&' . http_build_query($this->query_data) : '' );
+
+		return "$baseUrl/$version/$endpoint.$format$query";
+	}
+
+	protected function _loadDummyData( &$headers, &$response, &$response_code )
+	{
+		$data = @file_get_contents($this->_getDummyDataFilename());
+		$data = unserialize($data);
+
+		if (!$data || empty($data))
+			throw new Exceptions\RequestException("DummyData file failed to be opened.");
+
+		$headers = $data['headers'];
+		$response = $data['response'];
+		$response_code = $data['code'];
+	}
+
+	protected function _saveDummyData()
+	{
+		file_put_contents($this->_getDummyDataFilename(), serialize([
+			'headers'  => $this->result_headers,
+			'response' => $this->result_data_raw,
+			'code'     => $this->result_code,
+		]));
+	}
+
+	protected function _getDummyDataFilename()
+	{
+		$method   = $this->request_method;
+		$version  = self::API_VERSION;
+		$endpoint = str_replace([ '/', '.' ], [ '-', '' ], $this->endpoint);
+		$format   = strtolower($this->getSetting(self::SET_RESPONSE_FORMAT));
+		$query    = str_replace([ '&', '%26', '=', '%3D' ], [ '_', '_', '-', '-' ], !empty($this->query_data) ? '-' . http_build_query($this->query_data) : '' );
+
+		return __DIR__ . "/../../tests/DummyData/{$method}_$version-$endpoint$query.$format";
 	}
 
 	/**
@@ -448,11 +560,11 @@ class ChallongeAPI
 	/**
 	 *   (Process Check-ins) This should be invoked after a tournament's check-in window closes before the tournament is started.
 	 *
-	 *      Marks participants who have not checked in as inactive.
-	 *      Moves inactive participants to bottom seeds (ordered by original seed).
-	 *      Transitions the tournament state from 'checking_in' to 'checked_in'
+	 * Marks participants who have not checked in as inactive.
+	 * Moves inactive participants to bottom seeds (ordered by original seed).
+	 * Transitions the tournament state from 'checking_in' to 'checked_in'
 	 *
-	 *   NOTE: Checked in participants on the waiting list will be promoted if slots become available.
+	 * NOTE: Checked in participants on the waiting list will be promoted if slots become available.
 	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
@@ -476,8 +588,8 @@ class ChallongeAPI
 	/**
 	 *   (Abort Check-in) When your tournament is in a 'checking_in' or 'checked_in' state, there's no way to edit the tournament's start time (start_at) or check-in duration (check_in_duration). You must first abort check-in, then you may edit those attributes.
 	 *
-	 *      Makes all participants active and clears their checked_in_at times.
-	 *      Transitions the tournament state from 'checking_in' or 'checked_in' to 'pending'
+	 * Makes all participants active and clears their checked_in_at times.
+	 * Transitions the tournament state from 'checking_in' or 'checked_in' to 'pending'
 	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
@@ -759,7 +871,9 @@ class ChallongeAPI
 	}
 
 	/**
-	 *   (Randomize) Randomize seeds among participants. Only applicable before a tournament has started.
+	 *   (Randomize) Randomize seeds among participants.
+	 *
+	 * Only applicable before a tournament has started.
 	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
@@ -799,11 +913,8 @@ class ChallongeAPI
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches');
 
-		if (!is_null($state))
-			$this->addQuery('state', $state);
-
-		if (!is_null($participant_id))
-			$this->addQuery('participant_id', $participant_id);
+		$this->addQuery('state', $state);
+		$this->addQuery('participant_id', $participant_id);
 
 		$this->makeCall();
 		return new MatchList($this->result());
@@ -822,37 +933,59 @@ class ChallongeAPI
 	 */
 	public function mGet( $tournament_url, string $subdomain = null, int $match_id, bool $include_attachments = false ): Match
 	{
-		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id);
+		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . "/matches/$match_id");
 
 		$this->addQuery('include_attachments', $include_attachments);
 
 		$this->makeCall();
+
+		return new Match($this->result());
+	}
+
+	/**
+	 *   (Reopen) Reopens a match.
+	 *
+	 * Reopens a match that was marked completed, automatically resetting matches that follow it
+	 *
+	 * @param string|int  $tournament_url
+	 * @param string|null $subdomain
+	 * @param int         $match_id
+	 *
+	 * @return Match
+	 * @link http://api.challonge.com/v1/documents/matches/reopen
+	 */
+	public function mReopen( $tournament_url, string $subdomain = null, int $match_id ): Match
+	{
+		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . "/matches/$match_id/reopen");
+
+		$this->makeCall('POST');
 		return new Match($this->result());
 	}
 
 	/**
 	 *   (Update) Update/submit the score(s) for a match.
 	 *
-	 *   * If you're updating winner_id, scores_csv must also be provided. You may, however, update score_csv without providing winner_id for live score updates.
+	 * If you're updating winner_id, scores_csv must also be provided.
+	 * You may, however, update score_csv without providing winner_id for live score updates.
 	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 * @param int         $match_id
 	 * @param array       $data
 	 *
-	 * @return array
+	 * @return Match
 	 * @link http://api.challonge.com/v1/documents/matches/update
 	 */
-	public function mEdit( $tournament_url, string $subdomain = null, int $match_id, array $data )
+	public function mEdit( $tournament_url, string $subdomain = null, int $match_id, array $data ): Match
 	{
-		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id);
+		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . "/matches/$match_id");
 
 		if (!isset($data['match']))
 			$data = array( 'match' => $data );
 		$this->setData($data);
 
 		$this->makeCall('PUT');
-		return $this->result();
+		return new Match($this->result());
 	}
 
 
@@ -883,8 +1016,10 @@ class ChallongeAPI
 	}
 
 	/**
-	 *   (Create) Add a file, link, or text attachment to a match. NOTE: The associated tournament's "accept_attachments"
-	 *   attribute must be true for this action to succeed.
+	 *   (Create) Add a file, link, or text attachment to a match.
+	 *
+	 * NOTE: The associated tournament's "accept_attachments" attribute
+	 * must be true for this action to succeed.
 	 *
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain

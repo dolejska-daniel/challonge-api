@@ -1,13 +1,13 @@
 # Challonge API PHP7 wrapper
 
-> Version 0.3
+> Version pre-v0.4
 
 [![build status](https://gitlab.dolejska.me/dolejskad/challonge-api/badges/master/build.svg)](https://gitlab.dolejska.me/dolejskad/challonge-api/commits/master)
 [![coverage report](https://gitlab.dolejska.me/dolejskad/challonge-api/badges/master/coverage.svg)](https://gitlab.dolejska.me/dolejskad/challonge-api/commits/master)
-[![GitHub release](https://img.shields.io/github/release/dolejska-daniel/challonge-api.svg)](https://github.com/dolejska-daniel/riot-api)
-[![GitHub pre release](https://img.shields.io/github/release/dolejska-daniel/challonge-api/all.svg?label=pre%20release)](https://github.com/dolejska-daniel/riot-api)
-[![Packagist](https://img.shields.io/packagist/v/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/riot-api)
-[![Packagist](https://img.shields.io/packagist/l/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/riot-api)
+[![GitHub release](https://img.shields.io/github/release/dolejska-daniel/challonge-api.svg)](https://github.com/dolejska-daniel/challonge-api)
+[![GitHub pre release](https://img.shields.io/github/release/dolejska-daniel/challonge-api/all.svg?label=pre%20release)](https://github.com/dolejska-daniel/challonge-api)
+[![Packagist](https://img.shields.io/packagist/v/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/challonge-api)
+[![Packagist](https://img.shields.io/packagist/l/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/challonge-api)
 
 # Table of Contents
 
