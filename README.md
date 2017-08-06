@@ -2,8 +2,8 @@
 
 > Version pre-v0.4
 
-[![build status](https://gitlab.dolejska.me/dolejskad/challonge-api/badges/master/build.svg)](https://gitlab.dolejska.me/dolejskad/challonge-api/commits/master)
-[![coverage report](https://gitlab.dolejska.me/dolejskad/challonge-api/badges/master/coverage.svg)](https://gitlab.dolejska.me/dolejskad/challonge-api/commits/master)
+[![Build Status](https://travis-ci.org/dolejska-daniel/challonge-api.svg?branch=master)](https://travis-ci.org/dolejska-daniel/challonge-api)
+[![Test Coverage](https://codeclimate.com/github/dolejska-daniel/challonge-api/badges/coverage.svg)](https://codeclimate.com/github/dolejska-daniel/challonge-api/coverage)
 [![GitHub release](https://img.shields.io/github/release/dolejska-daniel/challonge-api.svg)](https://github.com/dolejska-daniel/challonge-api)
 [![GitHub pre release](https://img.shields.io/github/release/dolejska-daniel/challonge-api/all.svg?label=pre%20release)](https://github.com/dolejska-daniel/challonge-api)
 [![Packagist](https://img.shields.io/packagist/v/dolejska-daniel/challonge-api.svg)](https://packagist.org/packages/dolejska-daniel/challonge-api)
