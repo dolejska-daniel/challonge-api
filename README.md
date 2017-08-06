@@ -19,7 +19,9 @@
 
 # Introduction
 
-This is Challonge API wrapper for PHP7! Just ready to be used. With easy usage and clean code.
+This is Challonge API wrapper for PHP7!
+
+With easy usage and clean code.
 
 # ChallongeAPI
 
