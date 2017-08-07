@@ -58,12 +58,46 @@ class MatchEndpointTest extends TestCase
 	 * @depends testInit
 	 *
 	 * @param ChallongeAPI $api
+	 *
+	 * @return MatchList
 	 */
 	public function testEndpoint_Index( ChallongeAPI $api )
 	{
 		$matches = $api->mList(self::$tournament_id, self::$subdomain);
 
 		$this->assertInstanceOf(MatchList::class, $matches);
+
+		return $matches;
+	}
+
+	/**
+	 * @depends testEndpoint_Index
+	 *
+	 * @param MatchList $matches
+	 */
+	public function testEndpoint_Index_Count( MatchList $matches )
+	{
+		$this->assertCount($matches->count, $matches->getMatches());
+	}
+
+	/**
+	 * @depends testEndpoint_Index
+	 *
+	 * @param MatchList $matches
+	 */
+	public function testEndpoint_Index_getMatches( MatchList $matches )
+	{
+		$this->assertSame($matches->matches, $matches->getMatches());
+	}
+
+	/**
+	 * @depends testEndpoint_Index
+	 *
+	 * @param MatchList $matches
+	 */
+	public function testEndpoint_Index_getMatchById( MatchList $matches )
+	{
+		$this->assertSame($matches->matches[self::$match_id], $matches->getMatchById(self::$match_id));
 	}
 
 	/**
@@ -76,8 +110,6 @@ class MatchEndpointTest extends TestCase
 		$match = $api->mGet(self::$tournament_id, self::$subdomain, self::$match_id);
 
 		$this->assertInstanceOf(Match::class, $match);
-		$this->assertSame(self::$match_id, $match->id);
-		$this->assertSame(self::$match_id, $match->getData()['id']);
 	}
 
 	/**
@@ -93,8 +125,6 @@ class MatchEndpointTest extends TestCase
 		]);
 
 		$this->assertInstanceOf(Match::class, $match);
-		$this->assertSame(self::$match_id, $match->id);
-		$this->assertSame(self::$match_id, $match->getData()['id']);
 	}
 
 	/**
@@ -107,7 +137,5 @@ class MatchEndpointTest extends TestCase
 		$match = $api->mReopen(self::$tournament_id, self::$subdomain, self::$match_id);
 
 		$this->assertInstanceOf(Match::class, $match);
-		$this->assertSame(self::$match_id, $match->id);
-		$this->assertSame(self::$match_id, $match->getData()['id']);
 	}
 }

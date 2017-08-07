@@ -337,7 +337,7 @@ class ChallongeAPI
 		}
 		elseif ($response_code == 422)
 		{
-			$info = implode(', ', $this->result_data->errors);
+			$info = implode(', ', $this->result_data['errors']);
 			throw new Exceptions\RequestException("Request data validation error: {$info}.");
 		}
 		elseif ($response_code == 406)
@@ -418,8 +418,9 @@ class ChallongeAPI
 		$endpoint = str_replace([ '/', '.' ], [ '-', '' ], $this->endpoint);
 		$format   = strtolower($this->getSetting(self::SET_RESPONSE_FORMAT));
 		$query    = str_replace([ '&', '%26', '=', '%3D' ], [ '_', '_', '-', '-' ], !empty($this->query_data) ? '-' . http_build_query($this->query_data) : '' );
+		$data     = str_replace([ '&', '%26', '=', '%3D' ], [ '_', '_', '-', '-' ], !empty($this->post_data) ? '-' . http_build_query($this->post_data) : '' );
 
-		return __DIR__ . "/../../tests/DummyData/{$method}_$version-$endpoint$query.$format";
+		return __DIR__ . "/../../tests/DummyData/{$method}_$version-$endpoint$query$data.$format";
 	}
 
 	/**
@@ -1026,10 +1027,10 @@ class ChallongeAPI
 	 * @param int         $match_id
 	 * @param array       $data
 	 *
-	 * @return array
+	 * @return Attachment
 	 * @link http://api.challonge.com/v1/documents/match_attachments/create
 	 */
-	public function aAdd( $tournament_url, string $subdomain = null, int $match_id, array $data )
+	public function aAdd( $tournament_url, string $subdomain = null, int $match_id, array $data ): Attachment
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id . '/attachments');
 
@@ -1038,7 +1039,7 @@ class ChallongeAPI
 		$this->setData($data);
 
 		$this->makeCall('POST');
-		return $this->result();
+		return new Attachment($this->result());
 	}
 
 	/**
@@ -1069,10 +1070,10 @@ class ChallongeAPI
 	 * @param int         $attachment_id
 	 * @param array       $data
 	 *
-	 * @return array
+	 * @return Attachment
 	 * @link http://api.challonge.com/v1/documents/match_attachments/update
 	 */
-	public function aEdit( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id, array $data )
+	public function aEdit( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id, array $data ): Attachment
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id . '/attachments/' . $attachment_id);
 
@@ -1081,7 +1082,7 @@ class ChallongeAPI
 		$this->setData($data);
 
 		$this->makeCall('PUT');
-		return $this->result();
+		return new Attachment($this->result());
 	}
 
 	/**
@@ -1092,14 +1093,14 @@ class ChallongeAPI
 	 * @param int         $match_id
 	 * @param int         $attachment_id
 	 *
-	 * @return array
+	 * @return Attachment
 	 * @link http://api.challonge.com/v1/documents/match_attachments/destroy
 	 */
-	public function aDelete( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id )
+	public function aDelete( $tournament_url, string $subdomain = null, int $match_id, int $attachment_id ): Attachment
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/matches/' . $match_id . '/attachments/' . $attachment_id);
 
 		$this->makeCall('DELETE');
-		return $this->result();
+		return new Attachment($this->result());
 	}
 }
