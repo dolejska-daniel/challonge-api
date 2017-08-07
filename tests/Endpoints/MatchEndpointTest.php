@@ -30,14 +30,19 @@ use ChallongeAPI\Exceptions\SettingsException;
 
 class MatchEndpointTest extends TestCase
 {
+	/** @var string */
 	public static $tournament_id = 'challongeapi_dummy';
 
+	/** @var string */
 	public static $subdomain     = null;
 
-	public static $match_id      = 94562401;
+	/** @var int */
+	public static $match_id      = 94678978;
 
+	/** @var int */
 	public static $participant1  = 59610274;
 
+	/** @var int */
 	public static $participant2  = 59610275;
 
 

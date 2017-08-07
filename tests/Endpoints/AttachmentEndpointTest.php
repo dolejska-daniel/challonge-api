@@ -37,7 +37,7 @@ class AttachmentEndpointTest extends TestCase
 	public static $subdomain     = null;
 
 	/** @var int */
-	public static $match_id      = 94562401;
+	public static $match_id      = 94678978;
 
 	/** @var int */
 	public static $attachment1_id = null;
@@ -129,31 +129,31 @@ class AttachmentEndpointTest extends TestCase
 	/**
 	 * @depends testEndpoint_Index
 	 *
-	 * @param AttachmentList $matches
+	 * @param AttachmentList $attachments
 	 */
-	public function testEndpoint_Index_Count( AttachmentList $matches )
+	public function testEndpoint_Index_Count( AttachmentList $attachments )
 	{
-		$this->assertCount($matches->count, $matches->getAttachments());
+		$this->assertCount($attachments->count, $attachments->getAttachments());
 	}
 
 	/**
 	 * @depends testEndpoint_Index
 	 *
-	 * @param AttachmentList $matches
+	 * @param AttachmentList $attachments
 	 */
-	public function testEndpoint_Index_getMatches( AttachmentList $matches )
+	public function testEndpoint_Index_getMatches( AttachmentList $attachments )
 	{
-		$this->assertSame($matches->attachments, $matches->getAttachments());
+		$this->assertSame($attachments->attachments, $attachments->getAttachments());
 	}
 
 	/**
 	 * @depends testEndpoint_Index
 	 *
-	 * @param AttachmentList $matches
+	 * @param AttachmentList $attachments
 	 */
-	public function testEndpoint_Index_getMatchById( AttachmentList $matches )
+	public function testEndpoint_Index_getMatchById( AttachmentList $attachments )
 	{
-		$this->assertSame($matches->attachments[self::$attachment1_id], $matches->getAttachmentById(self::$attachment1_id));
+		$this->assertSame($attachments->attachments[self::$attachment1_id], $attachments->getAttachmentById(self::$attachment1_id));
 	}
 
 	/**

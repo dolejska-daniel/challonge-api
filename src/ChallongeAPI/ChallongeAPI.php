@@ -418,7 +418,7 @@ class ChallongeAPI
 		$endpoint = str_replace([ '/', '.' ], [ '-', '' ], $this->endpoint);
 		$format   = strtolower($this->getSetting(self::SET_RESPONSE_FORMAT));
 		$query    = str_replace([ '&', '%26', '=', '%3D' ], [ '_', '_', '-', '-' ], !empty($this->query_data) ? '-' . http_build_query($this->query_data) : '' );
-		$data     = str_replace([ '&', '%26', '=', '%3D' ], [ '_', '_', '-', '-' ], !empty($this->post_data) ? '-' . http_build_query($this->post_data) : '' );
+		$data     = !empty($this->post_data) ? '-' . md5(http_build_query($this->post_data)) : '';
 
 		return __DIR__ . "/../../tests/DummyData/{$method}_$version-$endpoint$query$data.$format";
 	}
@@ -757,10 +757,10 @@ class ChallongeAPI
 	 * @param string|null $subdomain
 	 * @param array       $data
 	 *
-	 * @return array
+	 * @return ParticipantList
 	 * @link http://api.challonge.com/v1/documents/participants/bulk_add
 	 */
-	public function pBulkAdd( $tournament_url, string $subdomain = null, array $data )
+	public function pBulkAdd( $tournament_url, string $subdomain = null, array $data ): ParticipantList
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/bulk_add');
 
@@ -769,7 +769,7 @@ class ChallongeAPI
 		$this->setData($data);
 
 		$this->makeCall('POST');
-		return $this->result();
+		return new ParticipantList($this->result());
 	}
 
 	/**
@@ -801,10 +801,10 @@ class ChallongeAPI
 	 * @param int         $participant_id
 	 * @param array       $data
 	 *
-	 * @return array
+	 * @return Participant
 	 * @link http://api.challonge.com/v1/documents/participants/update
 	 */
-	public function pEdit( $tournament_url, string $subdomain = null, int $participant_id, array $data )
+	public function pEdit( $tournament_url, string $subdomain = null, int $participant_id, array $data ): Participant
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/' . $participant_id);
 
@@ -813,7 +813,7 @@ class ChallongeAPI
 		$this->setData($data);
 
 		$this->makeCall('PUT');
-		return $this->result();
+		return new Participant($this->result());
 	}
 
 	/**
@@ -823,15 +823,15 @@ class ChallongeAPI
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 *
-	 * @return array
+	 * @return Participant
 	 * @link http://api.challonge.com/v1/documents/participants/check_in
 	 */
-	public function pCheckIn( $tournament_url, string $subdomain = null, int $participant_id )
+	public function pCheckIn( $tournament_url, string $subdomain = null, int $participant_id ): Participant
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/' . $participant_id . '/check_in');
 
 		$this->makeCall('POST');
-		return $this->result();
+		return new Participant($this->result());
 	}
 
 	/**
@@ -841,15 +841,15 @@ class ChallongeAPI
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 *
-	 * @return array
+	 * @return Participant
 	 * @link http://api.challonge.com/v1/documents/participants/undo_check_in
 	 */
-	public function pUndoCheckIn( $tournament_url, string $subdomain = null, int $participant_id  )
+	public function pUndoCheckIn( $tournament_url, string $subdomain = null, int $participant_id  ): Participant
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/' . $participant_id . '/undo_check_in');
 
 		$this->makeCall('POST');
-		return $this->result();
+		return new Participant($this->result());
 	}
 
 	/**
@@ -860,15 +860,15 @@ class ChallongeAPI
 	 * @param string|null $subdomain
 	 * @param int         $participant_id
 	 *
-	 * @return array
+	 * @return Participant
 	 * @link http://api.challonge.com/v1/documents/participants/destroy
 	 */
-	public function pDelete( $tournament_url, string $subdomain = null, int $participant_id  )
+	public function pDelete( $tournament_url, string $subdomain = null, int $participant_id  ): Participant
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/' . $participant_id);
 
 		$this->makeCall('DELETE');
-		return $this->result();
+		return new Participant($this->result());
 	}
 
 	/**
@@ -879,15 +879,15 @@ class ChallongeAPI
 	 * @param string|int  $tournament_url
 	 * @param string|null $subdomain
 	 *
-	 * @return array
+	 * @return ParticipantList
 	 * @link http://api.challonge.com/v1/documents/participants/randomize
 	 */
-	public function pRandomize( $tournament_url, string $subdomain = null )
+	public function pRandomize( $tournament_url, string $subdomain = null ): ParticipantList
 	{
 		$this->setEndpoint('tournaments/' . ( !is_null($subdomain) ? "$subdomain-" : '' ) . $tournament_url . '/participants/randomize');
 
 		$this->makeCall('POST');
-		return $this->result();
+		return new ParticipantList($this->result());
 	}
 
 
